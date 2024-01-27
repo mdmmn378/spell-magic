@@ -1,0 +1,21 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  default:
+    aliases:
+      - format
+    cmds:
+      - isort .
+      - black .
+    silent: true
+  
+  
+  lint:
+    cmds:
+      - ruff . --fix --ignore E501
+
+  test:
+    cmds:
+      - pytest -vs -m "not integration"

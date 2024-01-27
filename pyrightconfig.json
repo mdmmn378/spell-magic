@@ -1,0 +1,20 @@
+{
+    "include": [
+      "utils/",
+      "models/",
+      "app/",
+    ],
+    
+    "exclude": [
+      "**/node_modules",
+      "**/__pycache__",
+    ],
+  
+    "ignore": [
+      "tests/**/*",
+    ],
+  
+    "defineConstant": {
+      "DEBUG": true
+    }
+  }
