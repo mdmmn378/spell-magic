@@ -48,5 +48,6 @@ def write_ground_truth(paths: List[str], output_file_path: str):
 
 def write_incorrects(lines: List[str], output_file_path: str):
     with open(f"{output_file_path}", "w") as file:
+        lines = [line + "\n" for line in lines]
         file.writelines(lines)
     logger.info(f"Total lines: {len(lines)}")

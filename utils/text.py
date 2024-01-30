@@ -1,4 +1,10 @@
 import random
+from typing import Callable, List
+
+from loguru import logger
+from tqdm.notebook import tqdm
+
+no_change_count = 0
 
 
 def swap_adjacent_characters(sentence: str, probability: float) -> str:
@@ -106,11 +112,69 @@ def delete_random_words(sentence: str, probability: float) -> str:
     return " ".join(new_words)
 
 
+def sentence_changed(sentence: str, modified_sentence: str) -> bool:
+    return sentence != modified_sentence
+
+
+def insert_random_spaces(sentence: str, probability: float) -> str:
+    new_sentence = ""
+    for char in sentence:
+        new_sentence += char
+        if random.random() < probability:
+            new_sentence += " "
+    return new_sentence
+
+
+def randomly_choose_probabilities(num_probabilities: int) -> List[float]:
+    probabilities = []
+    for _ in range(num_probabilities):
+        probabilities.append(min(random.random(), 0.1))
+    return probabilities
+
+
+def randomly_choose_functions() -> List[Callable]:
+    error_functions = [
+        swap_adjacent_characters,
+        replace_characters,
+        insert_random_characters,
+        delete_random_characters,
+        substitute_phonetically_similar_characters,
+        repeat_characters,
+        remove_random_punctuation,
+        delete_random_words,
+        insert_random_spaces,
+    ]
+    how_many = random.randint(1, 3)
+    return random.sample(error_functions, how_many)
+
+
 def apply_random_errors(
-    sentence: str, error_functions: list, probabilities: list
+    sentence: str,
+    error_functions: list[Callable] | None = None,
+    probabilities: list[float] | None = None,
 ) -> str:
-    num_errors = random.randint(1, len(error_functions))
-    errors_to_apply = random.sample(error_functions, num_errors)
-    for error_func, prob in zip(errors_to_apply, probabilities):
-        sentence = error_func(sentence, prob)
-    return sentence
+    global no_change_count
+    if error_functions is None:
+        error_functions = randomly_choose_functions()
+        probabilities = randomly_choose_probabilities(len(error_functions))
+    modified_sentence = sentence
+    for func, prob in zip(error_functions, probabilities):  # type: ignore
+        modified_sentence = func(modified_sentence, prob)
+
+    if not sentence_changed(sentence, modified_sentence):
+        modified_sentence = error_functions[0](modified_sentence, 1)
+        no_change_count += 1
+    return modified_sentence
+
+
+def apply_errors_on_many_sentences(
+    sentences: List[str],
+    error_functions: list[Callable] | None = None,
+    probabilities: list[float] | None = None,
+) -> List[str]:
+    res = [
+        apply_random_errors(sentence, error_functions, probabilities)
+        for sentence in tqdm(sentences)
+    ]
+    logger.info(f"No change count: {no_change_count}")
+    return res
