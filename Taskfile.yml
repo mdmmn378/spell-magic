@@ -20,3 +20,7 @@ tasks:
   test:
     cmds:
       - pytest -vs -m "not integration"
+    
+  type:
+    cmds:
+      - pyright
