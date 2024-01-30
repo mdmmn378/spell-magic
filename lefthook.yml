@@ -2,4 +2,4 @@ pre-commit:
   commands:
     format:
       glob: "*.{py}"
-      run: task format
+      run: task

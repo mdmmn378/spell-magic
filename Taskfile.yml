@@ -10,8 +10,9 @@ tasks:
       - isort .
       - black .
     silent: true
-  
-  
+    deps:
+      - lint
+    
   lint:
     cmds:
       - ruff . --fix --ignore E501
@@ -19,3 +20,7 @@ tasks:
   test:
     cmds:
       - pytest -vs -m "not integration"
+    
+  type:
+    cmds:
+      - pyright

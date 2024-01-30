@@ -1,75 +1,53 @@
-import gc
-import json
 import random
+import re
+from typing import List
 
-import seaborn as sns
-import torch
-from sklearn.utils import shuffle
-from torch.utils.data import Dataset
+import pandas as pd
+from loguru import logger
+from texy.pipelines import strict_clean
+from tqdm.notebook import tqdm
 
-
-def sample_from_lists(lists, n, probabilities, plot=False):
-    if len(lists) != len(probabilities):
-        raise ValueError("Number of lists should be equal to number of probabilities.")
-    chosen_lists = random.choices(lists, probabilities, k=n)
-    result = [random.choice(lst) for lst in chosen_lists]
-    if plot:
-        sns.distplot(chosen_lists)
-    return result
+SAMPLE_SIZE = 5000
 
 
-class GenericDataset(Dataset):
-    def __init__(self, texts, labels, tokenizer, max_length):
-        self.texts = texts
-        self.labels = labels
-        self.tokenizer = tokenizer
-        self.max_length = max_length
-
-    def __getitem__(self, idx):
-        item = self.tokenizer(
-            self.texts[idx],
-            truncation=True,
-            padding="max_length",
-            max_length=self.max_length,
-            # return_tensors="pt",
-        )
-        item = {k: torch.tensor(v) for k, v in item.items()}
-        item["labels"] = torch.tensor(self.labels[idx])
-        return item
-
-    def __len__(self):
-        return len(self.labels)
+def sample_from_df(df: pd.DataFrame, sample_size: int = SAMPLE_SIZE) -> List[str]:
+    df = df.sample(sample_size)
+    return strict_clean(df["article"])  # pyright: ignore
 
 
-class GenericDatasetBuilder(object):
-    def __init__(
-        self,
-        dset_path,
-        tokenizer_class,
-        tokenizer_name,
-        device="cuda",
-        max_length=1024,
-    ):
-        self.device = device
-        self.data = json.load(open(dset_path))
-        self.data = shuffle(self.data)
-        gc.collect()
-        self.max_length = max_length
-        self.tokenizer = tokenizer_class.from_pretrained(
-            tokenizer_name,
-            # local_files_only=True
-        )
+def split_sentence(text: str) -> List[str]:
+    pattern = r"(?<=[।\?!])\s*"
+    res = re.split(pattern, text)
+    return [r.strip() + "\n" for r in res if len(r.strip()) > 0]
 
-    def _extract_texts_labels(self, dataset):
-        texts = [i["text"] for i in dataset]
-        labels = [i["label"] for i in dataset]
-        return texts, labels
 
-    def build(self):
-        texts, labels = self._extract_texts_labels(self.data)
-        dataset = GenericDataset(
-            texts, labels, tokenizer=self.tokenizer, max_length=self.max_length
-        )
-        del texts, labels
-        gc.collect()
-        return dataset
+def extract_lines(texts: List[str]) -> List[str]:
+    res = []
+    for text in texts:
+        lines = split_sentence(text)
+        res.extend(lines)
+    return res
+
+
+def build_dataset(dataset_path: str) -> List[str]:
+    df = pd.read_csv(dataset_path)
+    samples = sample_from_df(df)
+    return extract_lines(samples)
+
+
+def write_ground_truth(paths: List[str], output_file_path: str):
+    text_stream = []
+    with open(f"{output_file_path}", "w") as file:
+        for path in tqdm(paths):
+            tmp = list(set(build_dataset(dataset_path=path)))
+            text_stream.extend(tmp)
+        file.writelines(text_stream)
+    random.shuffle(text_stream)
+    logger.info(f"Total lines: {len(text_stream)}")
+
+
+def write_incorrects(lines: List[str], output_file_path: str):
+    with open(f"{output_file_path}", "w") as file:
+        lines = [line + "\n" for line in lines]
+        file.writelines(lines)
+    logger.info(f"Total lines: {len(lines)}")
