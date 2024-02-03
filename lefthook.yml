@@ -1,7 +1,7 @@
 pre-commit:
   commands:
     format:
-      glob: "*.{py}"
+      glob: "*.{py,ipynb}"
       run: task
     # test:
     #   run: task test
