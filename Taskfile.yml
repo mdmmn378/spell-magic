@@ -8,15 +8,19 @@ tasks:
       - format
     cmds:
       - isort .
+      - isort notebooks/
       - black .
+      - black notebooks/
     silent: true
     deps:
       - lint
-    
   lint:
     cmds:
       - ruff . --fix --ignore E501
-
+      
+  lint-notebooks:
+    cmds:
+      - ruff notebooks/*.ipynb --fix --ignore E501
   test:
     cmds:
       - pytest -vs -m "not integration"

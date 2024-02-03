@@ -3,8 +3,8 @@ pre-commit:
     format:
       glob: "*.{py,ipynb}"
       run: task
-    # test:
-    #   run: task test
+    test:
+      run: task test
     type:
       run: task type
     update:

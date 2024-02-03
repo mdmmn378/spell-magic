@@ -1,5 +1,4 @@
-# Forked from huggingface
-# https://github.com/huggingface/transformers/blob/main/examples/flax/language-modeling/t5_tokenizer_model.py
+# pyright: reportGeneralTypeIssues=false
 
 import json
 from typing import Iterator, List, Union
@@ -19,8 +18,9 @@ from tokenizers.processors import TemplateProcessing
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 
-# pyright: reportGeneralTypeIssues=false
 class SentencePieceUnigramTokenizer(BaseTokenizer):
+    # Forked from huggingface
+    # https://github.com/huggingface/transformers/blob/main/examples/flax/language-modeling/t5_tokenizer_model.py
     def __init__(
         self,
         replacement: str = "▁",
