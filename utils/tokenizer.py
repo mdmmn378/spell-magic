@@ -16,6 +16,7 @@ from tokenizers import (
 from tokenizers.implementations.base_tokenizer import BaseTokenizer
 from tokenizers.models import Unigram
 from tokenizers.processors import TemplateProcessing
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 
 # pyright: reportGeneralTypeIssues=false
@@ -120,3 +121,28 @@ class SentencePieceUnigramTokenizer(BaseTokenizer):
         tokenizer_json["model"]["unk_id"] = self.special_tokens["unk"]["id"]
 
         self._tokenizer = Tokenizer.from_str(json.dumps(tokenizer_json))
+
+
+class TokenizerPreprocessor:
+    def __init__(
+        self,
+        tokenizer: PreTrainedTokenizerBase,
+        max_input_length: int,
+        max_target_length: int,
+    ):
+        self.tokenizer = tokenizer
+        self.max_input_length = max_input_length
+        self.max_target_length = max_target_length
+        # self.tokenizer.special_tokens_map["additional_special_tokens"] = []
+
+    def __call__(self, examples: dict[str, list]):
+        inputs = examples["from"]
+        targets = examples["to"]
+        model_inputs = self.tokenizer(
+            inputs, max_length=self.max_input_length, truncation=True
+        )
+        labels = self.tokenizer(
+            text_target=targets, max_length=self.max_target_length, truncation=True
+        )
+        model_inputs["labels"] = labels["input_ids"]
+        return model_inputs
