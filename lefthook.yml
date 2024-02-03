@@ -7,5 +7,7 @@ pre-commit:
       run: task test
     type:
       run: task type
+    lint-notebooks:
+      run: task lint-notebooks
     update:
       run: git update-index --again
