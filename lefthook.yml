@@ -8,6 +8,7 @@ pre-commit:
     type:
       run: task type
     lint-notebooks:
+      glob: "*.{py,ipynb}"
       run: task lint-notebooks
     update:
       run: git update-index --again
