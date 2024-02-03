@@ -1,5 +1,6 @@
 import copy
 
+import editdistance
 import evaluate
 import numpy as np
 from transformers import Seq2SeqTrainer
@@ -11,9 +12,34 @@ def postprocess_text(preds: list[str], labels: list) -> tuple[list, list]:
     return preds, labels
 
 
+def recursive_flatten(nested_list: list) -> list:
+    flat_list = []
+    for item in nested_list:
+        if isinstance(item, list):
+            flat_list.extend(recursive_flatten(item))
+        else:
+            flat_list.append(item)
+    return flat_list
+
+
+def calculate_wer(reference: str, hypothesis: str) -> float:
+    ref_words = reference.split()
+    hyp_words = hypothesis.split()
+    distance = editdistance.eval(ref_words, hyp_words)
+    wer = distance / max(len(ref_words), 1)
+    return wer
+
+
+def calculate_cer(reference: str, hypothesis: str) -> float:
+    distance = editdistance.eval(reference, hypothesis)
+    cer = distance / max(len(reference), 1)
+    return cer
+
+
 class CustomTrainer(Seq2SeqTrainer):
     def __init__(self, *args, **kwargs):
         kwargs["compute_metrics"] = self.compute_metrics
+        self.show_extra_metrics = kwargs.pop("show_extra_metrics", False)
         super().__init__(*args, **kwargs)
         metric = evaluate.load("sacrebleu")
         self.metric = metric
@@ -39,7 +65,26 @@ class CustomTrainer(Seq2SeqTrainer):
         result = self.metric.compute(
             predictions=decoded_preds, references=decoded_labels
         )
-        result = {"bleu": result["score"]}  # pyright: ignore
+
+        if not self.show_extra_metrics:
+            result = {"bleu": result["score"]}  # pyright: ignore
+        else:
+            flattened_decoded_preds = recursive_flatten(decoded_preds)
+            flattened_decoded_labels = recursive_flatten(decoded_labels)
+
+            wer_score = [
+                calculate_wer(ref, hyp)
+                for ref, hyp in zip(flattened_decoded_labels, flattened_decoded_preds)
+            ]
+            cer_score = [
+                calculate_cer(ref, hyp)
+                for ref, hyp in zip(flattened_decoded_labels, flattened_decoded_preds)
+            ]
+            result = {
+                "bleu": result["score"],  # pyright: ignore
+                "wer": np.mean(wer_score),  # pyright: ignore
+                "cer": np.mean(cer_score),  # pyright: ignore
+            }
         prediction_lens = [
             np.count_nonzero(pred != self.tokenizer.pad_token_id)  # pyright: ignore
             for pred in preds

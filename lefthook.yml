@@ -1,11 +1,13 @@
 pre-commit:
   commands:
     format:
-      glob: "*.{py}"
+      glob: "*.{py,ipynb}"
       run: task
-    # test:
-    #   run: task test
+    test:
+      run: task test
     type:
       run: task type
+    lint-notebooks:
+      run: task lint-notebooks
     update:
       run: git update-index --again
