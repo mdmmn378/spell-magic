@@ -4,8 +4,10 @@ pre-commit:
       glob: "*.{py,ipynb}"
       run: task
     test:
+      glob: "*.{py,ipynb}"
       run: task test
     type:
+      glob: "*.{py,ipynb}"
       run: task type
     lint-notebooks:
       glob: "*.{py,ipynb}"

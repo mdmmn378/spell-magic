@@ -1,0 +1,5 @@
+outs:
+- md5: a33e7904659f043f0544d444bd120a47
+  size: 160070350
+  hash: md5
+  path: potrika_incorrect.txt

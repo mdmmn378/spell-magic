@@ -1,0 +1,5 @@
+outs:
+- md5: a4c3b8a8b1123e8560bdf2ff37c53046
+  size: 127703976
+  hash: md5
+  path: vocab_generic.txt
