@@ -135,7 +135,7 @@ def randomly_choose_probabilities(num_probabilities: int) -> List[float]:
 def randomly_choose_functions() -> List[Callable]:
     error_functions = [
         swap_adjacent_characters,
-        replace_characters,
+        # replace_characters,
         insert_random_characters,
         delete_random_characters,
         substitute_phonetically_similar_characters,
