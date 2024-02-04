@@ -1,0 +1,8 @@
+*.jsonl
+*.csv
+!.gitignore
+!.dvc
+/potrika
+/potrika_gt.txt
+/potrika_incorrect.txt
+/vocab_generic.txt

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "spell-magic"
+version = "0.1.0"
+description = "A simple spell checker"
+authors = ["Mamun <mdmmn378@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "0.109.1"
+pydantic = "2.6.0"
+uvicorn = "0.27.0.post1"
+tokenizers = "0.13.3"
+dvc-gs = "^3.0.1"
+torch = { version = "2.0.1", source = "pytorch-cpu-src" }
+transformers = "4.33.2"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+
+[[tool.poetry.source]]
+name = "pytorch-cpu-src"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

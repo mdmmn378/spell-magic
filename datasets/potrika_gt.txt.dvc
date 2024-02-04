@@ -1,0 +1,5 @@
+outs:
+- md5: ef4f8964c26137cbd3bcfb17a2e26412
+  size: 155240806
+  hash: md5
+  path: potrika_gt.txt
