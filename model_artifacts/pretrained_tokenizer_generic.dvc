@@ -1,0 +1,6 @@
+outs:
+- md5: ced3061ad83279a29f5aa2589da3515f.dir
+  size: 3193050
+  nfiles: 3
+  hash: md5
+  path: pretrained_tokenizer_generic

@@ -1,0 +1,6 @@
+outs:
+- md5: 21d61cb21b354f1cbd7f75f4cc7e197b.dir
+  size: 245902260
+  nfiles: 7
+  hash: md5
+  path: exported_model_pt
