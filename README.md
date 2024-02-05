@@ -4,7 +4,7 @@
 
 ## Description
 
-Spell-magic is an auto spell-correction tool for `Bangla`. (\_under development)
+Spell-magic is an auto spell-correction tool for `Bangla`. (under development)
 
 ## Installation
 
@@ -114,7 +114,7 @@ A subset of the entire dataset was used to train the model.
 | ScienceTechnology | 5k           |
 | Sports            | 5k           |
 
-Although, it's hard to simulate human error patterns, an attempt was made to generate some common errors -
+Although it's hard to simulate human error patterns, an attempt was made to generate some common errors -
 
 | Function                                   | Action                                         |
 | ------------------------------------------ | ---------------------------------------------- |
@@ -129,16 +129,16 @@ Although, it's hard to simulate human error patterns, an attempt was made to gen
 
 ## Model
 
-The problem of correcting spelling can be tackled in various ways. Some common ways are using statistical models, NER, hand picked rules, Seq2Seq, etc..
-In this experiment, a Seq2Seq model was used [t5-small](https://huggingface.co/csebuetnlp/banglat5_small) to correct incorrect sentences. Using a transformer based model can essentially reduce the requirement of a lot of granular hand picked rules. With sufficient amount of diverse data, it can achieve a notable score at correcting spelling.
+The problem of correcting spelling can be tackled in various ways. Some common ways are using statistical models, NER, hand-picked rules, Seq2Seq, etc.
+In this experiment, a Seq2Seq model was used [t5-small](https://huggingface.co/csebuetnlp/banglat5_small) to correct incorrect sentences. Using a transformer-based model can essentially reduce the requirement of a lot of granular hand-picked rules. With a sufficient amount of diverse data, it can achieve a notable score in correcting spelling.
 
 ## Evaluation
 
-The following tables contains the evaluation scores for the model
+The following tables contain the evaluation scores for the model
 
 | Metric | Score  | Scale |
 | ------ | ------ | ----- |
-| Bleu   | 74.20  | 0-100 |
+| BLEU   | 74.20  | 0-100 |
 | WER    | 0.1296 | 0-1   |
 | CER    | 0.0999 | 0-1   |
 
@@ -151,12 +151,12 @@ Here is a [`weights and bias`](https://wandb.ai/mdmmn378/spell-correction/?works
 This project was done as a proof of concept. There are a few ways to improve the model.
 
 - ML
-  - Training the model with real world data, and adding more diverse synthetic data to the dataset should improve the scores..
-  - Train a larger variation of `t5` should contribute to the improvement.
-  - A pre-trained tokenizer was used instead of a custom trained one. The goal was to take full advantage of the pre-trained model embeddings. Training the model with a larger dataset along with a customized tokenizer should improve the performance.
+  - Training the model with real-world data, and adding more diverse synthetic data to the dataset should improve the scores.
+  - Training a larger variation of `t5` should contribute to the improvement.
+  - A pre-trained tokenizer was used instead of a custom-trained one. The goal was to take full advantage of the pre-trained model embeddings. Training the model with a larger dataset along with a customized tokenizer should improve the performance.
   - Right now, the model has a smaller context length (128 tokens). It can be increased to handle longer contexts.
-  - No heuristics are being applied to this project. In real world, there are a lot of edge cases, and heuristics must be applied in those scenarios.
-  - (Unverified) In my opinion, a graph based model could be used along with the Seq2Seq to generalize token level dependency better.
+  - No heuristics are being applied to this project. In the real world, there are a lot of edge cases, and heuristics must be applied in those scenarios.
+  - (Unverified) In my opinion, a graph-based model could be used along with the Seq2Seq model to generalize token-level dependency better.
   - (Unverified) A token classifier could be used to ensure the alignment of the source and target texts.
 - Ops
   - Currently, the model is being trained from notebooks, without any DP/DDP pipeline. For larger models, it's better to include multi-node training capabilities.
